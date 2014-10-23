@@ -19,7 +19,7 @@
     var SEC_PER_STEP = 8;
     var STEPS_PER_FRAME = 10000;
     var METERS_PER_UNIT = 1000000000;
-    var MAX_TRAIL_VERTICES = 400;
+    var MAX_TRAIL_VERTICES = 500;
     var MIN_GHOST_DISTANCE = 100;
     var GHOST_DISTANCE_SCALE = 80;
     var MAX_GHOST_OPACITY = 0.15;
@@ -31,7 +31,7 @@
 
     function createCamera() {
         camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-        camera.position.set(0, 600, 0);
+        camera.position.set(0, 2000, 0);
         return camera;
     }
 
@@ -49,7 +49,19 @@
         var z = v1.z - v2.z;
         return Math.sqrt(x * x + y * y + z * z);
     }
-
+    function leaveTrail(sphere) {
+        sphere.astro.trail.geometry.vertices.unshift(new THREE.Vector3().copy(sphere.position));
+        sphere.astro.trail.geometry.vertices.length = MAX_TRAIL_VERTICES;
+        sphere.astro.trail.geometry.verticesNeedUpdate = true;
+    }
+    function createTrail(x, y, z) {
+        var trailGeometry = new THREE.Geometry();
+        for (i = 0; i < MAX_TRAIL_VERTICES; i++) {
+            trailGeometry.vertices.push(new THREE.Vector3(x, y, z));
+        }
+        var trailMaterial = new THREE.LineBasicMaterial();
+        return new THREE.Line(trailGeometry, trailMaterial);
+    }
     function updateVelocity(planet, star) {
         var vel = new THREE.Vector3();
         var speed;
@@ -61,48 +73,56 @@
             planet.position.x += planet.astro.vel.x * SEC_PER_STEP;
             planet.position.y += planet.astro.vel.y * SEC_PER_STEP;
             planet.position.z += planet.astro.vel.z * SEC_PER_STEP;
-
+            if (i % 10000 === 0) {
+                leaveTrail(planet);
+            }
         }
     }
 
+
     var scene = new THREE.Scene();
+
     var camera = createCamera();
     scene.add(camera);
     camera.lookAt(scene.position);
 
-//    astro = {};
-//    var geometry = new THREE.SphereGeometry(5, 32, 16);
-//    var texture = THREE.ImageUtils.loadTexture('1.jpg');
-//    var material = new THREE.MeshLambertMaterial({ map: texture });
-//    var sphere = new THREE.Mesh(geometry, material);
-//    sphere.position.set(Math.cos(1 / 180 * Math.PI) * 80,
-//        Math.sin(1 / 180 * Math.PI) * 80, 0);
-//    sphere.astro = astro;
-//    sphere.astro.mass = 3.30104e23;
-//    sphere.astro.vel = new THREE.Vector3(0, 0, 4.74e-5);
-//    scene.add(sphere);
+    scale = 200;
+    // All units are in MegaMeters !
+
+    var JupiterRadius = 0.069173 * scale;
+    var JupiterDistance = 792.5;
+    var JupiterSpeed = 1.3e-5;
+    var JupiterInclination = 1.3053;
+    var JupiterMass = 1.89813e27;
+
+    var SunRadius = 0.6955 * scale;
+    var SunMass = 3.988435e30;
+
 
     var textureJupiter = THREE.ImageUtils.loadTexture('jupiter.jpg');
     astro = {};
-    var geometry = new THREE.SphereGeometry(35, 32, 16);
+    var geometry = new THREE.SphereGeometry(JupiterRadius, 32, 16);
     var material = new THREE.MeshLambertMaterial({ map: textureJupiter });
-    var planet = new THREE.Mesh(geometry, material);
-    planet.position.set(Math.cos(1 / 180 * Math.PI) * 140,
-        Math.sin(1 / 180 * Math.PI) * 140, 0);
-    planet.astro = astro;
-    planet.astro.mass = 1.89813e27;
-    planet.astro.vel = new THREE.Vector3(0, 0, 4.74e-5);
-    scene.add(planet);
+    var Jupiter = new THREE.Mesh(geometry, material);
+    Jupiter.position.set(Math.cos(JupiterInclination / 180 * Math.PI) * JupiterDistance,
+        Math.sin(JupiterInclination / 180 * Math.PI) * JupiterDistance, 0);
+    Jupiter.astro = astro;
+    Jupiter.astro.mass = JupiterMass;
+    Jupiter.astro.vel = new THREE.Vector3(0, 0, JupiterSpeed);
+    Jupiter.astro.trail = createTrail(Math.cos(JupiterInclination / 180 * Math.PI) * JupiterDistance,
+        Math.sin(JupiterInclination / 180 * Math.PI) * JupiterDistance, 0);
+    scene.add(Jupiter);
+    scene.add(Jupiter.astro.trail);
 
     var textureSun = THREE.ImageUtils.loadTexture('texture_sun.jpg');
     astro = {};
-    var geometry = new THREE.SphereGeometry(20, 32, 16);
+    var geometry = new THREE.SphereGeometry(SunRadius, 32, 16);
     var material = new THREE.MeshLambertMaterial({ color: 0xff3300, specular: 0x555555, map: textureSun, emissive: 0xffffff});
-    var star = new THREE.Mesh(geometry, material);
-    star.position.set(0, 0, 0);
-    star.astro = astro;
-    star.astro.mass = 3.988435e30;
-    scene.add(star);
+    var Sun = new THREE.Mesh(geometry, material);
+    Sun.position.set(0, 0, 0);
+    Sun.astro = astro;
+    Sun.astro.mass = SunMass;
+    scene.add(Sun);
 
     var ambientLight = new THREE.PointLight(0xCCCCCC, 2);
     ambientLight.position.set(0, 0, 0);
@@ -112,16 +132,9 @@
 
 
     function render() {
-//        ambientLight.position.set(planet.position.x, planet.position.y, planet.position.z);
         renderer.render(scene, camera);
-        star.rotateX(0.01);
-        star.rotateY(0.01);
-        star.rotateZ(0.01);
-        planet.rotateX(0.01);
-        planet.rotateY(0.01);
-        planet.rotateZ(0.01);
-//        updateVelocity(sphere, star);
-        updateVelocity(planet, star);
+        updateVelocity(Jupiter, Sun);
+        Sun.rotateY(-0.01);
         requestAnimationFrame(render);
     }
     render();
