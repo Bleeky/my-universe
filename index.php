@@ -32,7 +32,7 @@
 
     function createCamera() {
         camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-        camera.position.set(0, 2000, 0);
+        camera.position.set(0, 600, 0);
         return camera;
     }
 
@@ -73,44 +73,55 @@
 
 
     astro = {};
-    var geometry = new THREE.SphereGeometry(30, 32, 16);
-    var material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    var geometry = new THREE.SphereGeometry(5, 32, 16);
+    var texture = THREE.ImageUtils.loadTexture('1.jpg');
+    var material = new THREE.MeshLambertMaterial({ map: texture });
     var sphere = new THREE.Mesh(geometry, material);
-    sphere.position.set(Math.cos(1 / 180 * Math.PI) * 100,
-        Math.sin(1 / 180 * Math.PI) * 100, 0);
+    sphere.position.set(Math.cos(1 / 180 * Math.PI) * 80,
+        Math.sin(1 / 180 * Math.PI) * 80, 0);
     sphere.astro = astro;
     sphere.astro.mass = 3.30104e23;
     sphere.astro.vel = new THREE.Vector3(0, 0, 4.74e-5);
     scene.add(sphere);
 
+    var textureJupiter = THREE.ImageUtils.loadTexture('jupiter.jpg');
     astro = {};
-    var geometry = new THREE.SphereGeometry(15, 32, 16);
-    var material = new THREE.MeshBasicMaterial({ color: 0xb8ff0a });
+    var geometry = new THREE.SphereGeometry(35, 32, 16);
+    var material = new THREE.MeshLambertMaterial({ map: textureJupiter });
     var planet = new THREE.Mesh(geometry, material);
-    planet.position.set(Math.cos(1 / 180 * Math.PI) * 70,
-        Math.sin(1 / 180 * Math.PI) * 70, 0);
+    planet.position.set(Math.cos(1 / 180 * Math.PI) * 100,
+        Math.sin(1 / 180 * Math.PI) * 100, 0);
     planet.astro = astro;
     planet.astro.mass = 6.30104e23;
     planet.astro.vel = new THREE.Vector3(0, 0, 4.74e-5);
     scene.add(planet);
 
+    var textureSun = THREE.ImageUtils.loadTexture('texture_sun.jpg');
     astro = {};
     var geometry = new THREE.SphereGeometry(20, 32, 16);
-    var material = new THREE.MeshBasicMaterial({ color: 0xfff000 });
+    var material = new THREE.MeshLambertMaterial({ color: 0xff3300, specular: 0x555555, map: textureSun, emissive: 0xffffff});
     var star = new THREE.Mesh(geometry, material);
     star.position.set(0, 0, 0);
     star.astro = astro;
     star.astro.mass = 1.988435e30;
     scene.add(star);
 
-    var ambientLight = new THREE.AmbientLight(0xCCCCCC);
+    var ambientLight = new THREE.PointLight(0xCCCCCC, 2);
+    ambientLight.position.set(0, 0, 0);
     scene.add(ambientLight);
 
     var renderer = createRenderer();
 
 
     function render() {
+//        ambientLight.position.set(planet.position.x, planet.position.y, planet.position.z);
         renderer.render(scene, camera);
+        star.rotateX(0.1);
+        star.rotateY(0.1);
+        star.rotateZ(0.1);
+        planet.rotateX(0.1);
+        planet.rotateY(0.1);
+        planet.rotateZ(0.1);
         updateVelocity(sphere, star);
         updateVelocity(planet, star);
         requestAnimationFrame(render);
