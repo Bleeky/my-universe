@@ -20,10 +20,6 @@
     var STEPS_PER_FRAME = 10000;
     var METERS_PER_UNIT = 1000000000;
     var MAX_TRAIL_VERTICES = 500;
-    var MIN_GHOST_DISTANCE = 100;
-    var GHOST_DISTANCE_SCALE = 80;
-    var MAX_GHOST_OPACITY = 0.15;
-    var PAUSED = false;
 
     function getAcceleration(distance, starMass) {
         return G * starMass / (Math.pow(distance, 2));
@@ -73,7 +69,7 @@
             planet.position.x += planet.astro.vel.x * SEC_PER_STEP;
             planet.position.y += planet.astro.vel.y * SEC_PER_STEP;
             planet.position.z += planet.astro.vel.z * SEC_PER_STEP;
-            if (i % 10000 === 0) {
+            if (i % STEPS_PER_FRAME === 0) {
                 leaveTrail(planet);
             }
         }
@@ -128,10 +124,30 @@
     ambientLight.position.set(0, 0, 0);
     scene.add(ambientLight);
 
+    var texture = THREE.ImageUtils.loadTexture( 'stars.png' );
+    var backgroundMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(2, 2, 0),
+        new THREE.MeshBasicMaterial({
+            map: texture
+        }));
+
+    backgroundMesh .material.depthTest = false;
+    backgroundMesh .material.depthWrite = false;
+
+    // Create your background scene
+    var backgroundScene = new THREE.Scene();
+    var backgroundCamera = new THREE.Camera();
+    backgroundScene .add(backgroundCamera );
+    backgroundScene .add(backgroundMesh );
+
+
     var renderer = createRenderer();
 
 
     function render() {
+        renderer.autoClear = false;
+        renderer.clear();
+        renderer.render(backgroundScene , backgroundCamera );
         renderer.render(scene, camera);
         updateVelocity(Jupiter, Sun);
         Sun.rotateY(-0.01);
