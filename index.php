@@ -1,7 +1,6 @@
 <html>
 <head>
     <title>MyUniverse</title>
-    <style>canvas { width: 100%; height: 100% }</style>
 </head>
 <body>
 
@@ -93,18 +92,6 @@
                 Math.sin(inclination / 180 * Math.PI) * distance, 0);
             scene.add(Planet.physics.trail);
         }
-
-        if (Planet.physics.type == "Rings") {
-            var material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-            var geometry = new THREE.RingGeometry(1000, 1100, 32);
-
-
-            var circle = new THREE.Mesh(geometry, material);
-            Planet.physics.rings = circle;
-            Planet.physics.rings.position.set(0, 0, 0);
-            scene.add(Planet.physics.rings);
-        }
-
         scene.add(Planet);
         return (Planet);
     }
@@ -118,22 +105,10 @@
     scale = 200;
     // All units are in GigaMeters !
 
-    var JupiterRadius = 0.069173 * scale;
-    var JupiterDistance = 792.5;
-    var JupiterSpeed = 1.3e-5;
-    var JupiterInclination = 1.3053;
-    var JupiterMass = 1.89813e27;
-
     var SunRadius = 0.6955 * scale;
     var SunMass = 3.988435e30;
 
-    var SaturnRadius = 0.057316 * scale;
-    var SaturnDistance = 1490;
-    var SaturnSpeed = 9.64e-6;
-    var SaturnInclination = 2.48446;
-    var SaturnMass = 5.98319e26;
-
-    var textureSun = THREE.ImageUtils.loadTexture('texture_sun.jpg');
+    var textureSun = THREE.ImageUtils.loadTexture('sun.jpg');
     var physics = {};
     var geometry = new THREE.SphereGeometry(SunRadius, 32, 16);
     var material = new THREE.MeshLambertMaterial({ color: 0xff3300, specular: 0x555555, map: textureSun, emissive: 0xffffff});
@@ -147,7 +122,7 @@
     Saturn = CreatePlanet('Rings', 'Saturn', 'saturn.jpg', 0.057316 * scale, 1490, 9.64e-6, 2.48446, 5.98319e26);
 
 
-    var ambientLight = new THREE.PointLight(0xCCCCCC, 2);
+    var ambientLight = new THREE.PointLight(0xffffff, 2);
     ambientLight.position.set(0, 0, 0);
     scene.add(ambientLight);
 
@@ -166,6 +141,7 @@
         requestAnimationFrame(render);
     }
     render();
+
 </script>
 </body>
 </html>
