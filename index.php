@@ -17,7 +17,6 @@
 <body>
 
 <div id="container">
-
 </div>
 
 <script src="three.min.js"></script>
@@ -25,10 +24,10 @@
 
 <script>
     var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
-    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 200000;
+    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
 
     var G = 6.67384e-11;
-    var SEC_PER_STEP = 18;
+    var SEC_PER_STEP = 8;
     var STEPS_PER_FRAME = 10000;
     var METERS_PER_UNIT = 1000000000;
     var MAX_TRAIL_VERTICES = 500;
@@ -111,17 +110,11 @@
     }
 
     var scene = new THREE.Scene();
-
     var camera = createCamera();
     scene.add(camera);
     camera.lookAt(scene.position);
 
-
-
     controls = new THREE.OrbitControls(camera);
-//    controls.addEventListener( 'change', render );
-
-
 
     scale = 200;
     // All units are in GigaMeters !
@@ -141,7 +134,7 @@
 
     Jupiter = CreatePlanet('Standard', 'Jupiter', 'jupiter.jpg', 0.069173 * scale, 792.5, 1.3e-5, 1.3053, 1.89813e27);
     Saturn = CreatePlanet('Rings', 'Saturn', 'saturn.jpg', 0.057316 * scale, 1490, 9.64e-6, 2.48446, 5.98319e26);
-    Earth = CreatePlanet('Standard', 'Earth', '1.jpg', 0.0063674447 * 9000, 900, 1.38e-5, 5e-5, 5.9721986e24);
+    Earth = CreatePlanet('Standard', 'Earth', '1.jpg', 0.0063674447 * scale, 900, 1.38e-5, 5e-5, 5.9721986e24);
 
     var ambientLight = new THREE.PointLight(0xffffff, 2);
     ambientLight.position.set(0, 0, 0);
@@ -157,13 +150,6 @@
         render();
     }
     function animate() {
-//        calculateVelocity(Jupiter, Sun);
-//        calculateVelocity(Saturn, Sun);
-//        calculateVelocity(Earth, Sun);
-//
-//        Sun.rotateY(-0.01);
-
-//        renderer.render(scene, camera);
         render();
         requestAnimationFrame(animate);
         controls.update();
@@ -172,7 +158,6 @@
         calculateVelocity(Jupiter, Sun);
         calculateVelocity(Saturn, Sun);
         calculateVelocity(Earth, Sun);
-
         Sun.rotateY(-0.01);
         renderer.render(scene, camera);
     }
