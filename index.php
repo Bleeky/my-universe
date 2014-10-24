@@ -1,33 +1,34 @@
 <html>
 <head>
     <title>MyUniverse</title>
-    <style>body {
-            color: #000;
-            font-family:Monospace;
-            font-size:13px;
-            text-align:center;
-            font-weight: bold;
-
-            background-color: #fff;
-            margin: 0px;
-            overflow: hidden;
-        }
-    </style>
 </head>
 <body>
 
-<div id="container">
+<div id="model">
+    <div id="container" style="position: absolute; left: 0px; top: 0px; z-index: 0;">
+    </div>
+
+    <div id="speed" style="right: 0px; z-index: 1; position: absolute; color: red; font-family: Helvetica, sans-serif;">
+        <label for="focus" style="color: #f00;">Focus camera on:</label>
+        <select id="focus">
+            <option selected value="-1">Sun</option>
+        </select>
+    </div>
 </div>
+
+
+<script src="typeface.js"></script>
+<script src="helvetiker_regular.typeface.js"></script>
 
 <script src="three.min.js"></script>
 <script src="https://dl.dropboxusercontent.com/u/3587259/Code/Threejs/OrbitControls.js"></script>
 
 <script>
     var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
-    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 30000;
 
     var G = 6.67384e-11;
-    var SEC_PER_STEP = 8;
+    var SEC_PER_STEP = 4;
     var STEPS_PER_FRAME = 10000;
     var METERS_PER_UNIT = 1000000000;
     var MAX_TRAIL_VERTICES = 500;
@@ -99,12 +100,21 @@
         Planet.physics.name = name;
         Planet.physics.type = type;
         Planet.physics.mass = mass;
-        if (Planet.physics.type == "Standard" || Planet.physics.type == "Rings") {
+
             Planet.physics.vel = new THREE.Vector3(0, 0, speed);
             Planet.physics.trail = createTrail(Math.cos(inclination / 180 * Math.PI) * distance,
                 Math.sin(inclination / 180 * Math.PI) * distance, 0);
             scene.add(Planet.physics.trail);
-        }
+
+
+//        var geometry = new THREE.TextGeometry(name, {size: 1, height: 10, font: 'optimer', weight: 'normal' });
+//        var material = new THREE.THREE.MeshBasicMaterial({ color: 0xffff00 });
+//        var text = new THREE.Mesh(geometry, material);
+//        text.position.set(Math.cos(inclination / 180 * Math.PI) * distance,
+//            Math.sin(inclination / 180 * Math.PI) * distance, 0);
+//        scene.add(text);
+
+
         scene.add(Planet);
         return (Planet);
     }
