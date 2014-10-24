@@ -1,14 +1,27 @@
 <html>
 <head>
     <title>MyUniverse</title>
+    <style>body {
+            color: #000;
+            font-family:Monospace;
+            font-size:13px;
+            text-align:center;
+            font-weight: bold;
+
+            background-color: #fff;
+            margin: 0px;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body>
 
-<div id="canvas">
+<div id="container">
 
 </div>
 
 <script src="three.min.js"></script>
+<script src="https://dl.dropboxusercontent.com/u/3587259/Code/Threejs/OrbitControls.js"></script>
 
 <script>
     var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
@@ -28,10 +41,11 @@
     }
 
     function createRenderer() {
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-        var container = document.getElementById("canvas");
-        container.appendChild(renderer.domElement);
+        var renderer = new THREE.WebGLRenderer( { antialias: false } );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        var container = document.getElementById('container');
+        container.appendChild( renderer.domElement );
+        window.addEventListener('resize', onWindowResize, false );
         return renderer;
     }
     function getAcceleration(distance, starMass) {
@@ -102,6 +116,13 @@
     scene.add(camera);
     camera.lookAt(scene.position);
 
+
+
+    controls = new THREE.OrbitControls(camera);
+//    controls.addEventListener( 'change', render );
+
+
+
     scale = 200;
     // All units are in GigaMeters !
 
@@ -120,27 +141,42 @@
 
     Jupiter = CreatePlanet('Standard', 'Jupiter', 'jupiter.jpg', 0.069173 * scale, 792.5, 1.3e-5, 1.3053, 1.89813e27);
     Saturn = CreatePlanet('Rings', 'Saturn', 'saturn.jpg', 0.057316 * scale, 1490, 9.64e-6, 2.48446, 5.98319e26);
-
+    Earth = CreatePlanet('Standard', 'Earth', '1.jpg', 0.0063674447 * 9000, 900, 1.38e-5, 5e-5, 5.9721986e24);
 
     var ambientLight = new THREE.PointLight(0xffffff, 2);
     ambientLight.position.set(0, 0, 0);
     scene.add(ambientLight);
 
-
     var renderer = createRenderer();
 
 
-    function render() {
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        render();
+    }
+    function animate() {
+//        calculateVelocity(Jupiter, Sun);
+//        calculateVelocity(Saturn, Sun);
+//        calculateVelocity(Earth, Sun);
+//
+//        Sun.rotateY(-0.01);
 
+//        renderer.render(scene, camera);
+        render();
+        requestAnimationFrame(animate);
+        controls.update();
+    }
+    function render() {
         calculateVelocity(Jupiter, Sun);
         calculateVelocity(Saturn, Sun);
+        calculateVelocity(Earth, Sun);
 
         Sun.rotateY(-0.01);
-
         renderer.render(scene, camera);
-        requestAnimationFrame(render);
     }
-    render();
+    animate();
 
 </script>
 </body>
