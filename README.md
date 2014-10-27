@@ -11,4 +11,5 @@ To come :
     Different types of planets
     Statistics of each planet
     Collisions
+    LeapMotion support !
     And more ....

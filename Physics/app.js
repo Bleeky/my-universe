@@ -15,7 +15,14 @@ function createCamera() {
     camera.position.set(0, 4500, 0);
     return camera;
 }
-
+function createTrail(x, y, z) {
+    var trailGeometry = new THREE.Geometry();
+    for (var i = 0; i < MAX_TRAIL_VERTICES; i++) {
+        trailGeometry.vertices.push(new THREE.Vector3(x, y, z));
+    }
+    var trailMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00});
+    return new THREE.Line(trailGeometry, trailMaterial);
+}
 function createRenderer() {
     var renderer = new THREE.WebGLRenderer( { antialias: false } );
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -38,14 +45,6 @@ function leaveTrail(sphere) {
     sphere.physics.trail.geometry.vertices.length = MAX_TRAIL_VERTICES;
     sphere.physics.trail.geometry.verticesNeedUpdate = true;
 }
-function createTrail(x, y, z) {
-    var trailGeometry = new THREE.Geometry();
-    for (var i = 0; i < MAX_TRAIL_VERTICES; i++) {
-        trailGeometry.vertices.push(new THREE.Vector3(x, y, z));
-    }
-    var trailMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00});
-    return new THREE.Line(trailGeometry, trailMaterial);
-}
 function calculateVelocity(planet, star) {
     var velocity = new THREE.Vector3();
     var speed;
@@ -63,7 +62,6 @@ function calculateVelocity(planet, star) {
         }
     }
 }
-
 function CreatePlanet(type, name, texturePath, radius, distance, speed, inclination, mass) {
     var texturePlanet = THREE.ImageUtils.loadTexture(texturePath);
     var physics = {};
@@ -90,7 +88,6 @@ function CreatePlanet(type, name, texturePath, radius, distance, speed, inclinat
 //            Math.sin(inclination / 180 * Math.PI) * distance, 0);
 //        scene.add(text);
 
-
     scene.add(Planet);
     return (Planet);
 }
@@ -102,7 +99,7 @@ camera.lookAt(scene.position);
 
 controls = new THREE.OrbitControls(camera);
 
-scale = 200;
+var scale = 200;
 // All units are in GigaMeters !
 
 var SunRadius = 0.6955 * scale;
@@ -144,7 +141,7 @@ function render() {
     calculateVelocity(Jupiter, Sun);
     calculateVelocity(Saturn, Sun);
     calculateVelocity(Earth, Sun);
-    Sun.rotateY(-0.01);
+    Sun.rotateY(-0.001);
     renderer.render(scene, camera);
 }
 animate();
