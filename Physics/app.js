@@ -105,7 +105,7 @@ var scale = 200;
 var SunRadius = 0.6955 * scale;
 var SunMass = 3.988435e30;
 
-var textureSun = THREE.ImageUtils.loadTexture('sun.jpg');
+var textureSun = THREE.ImageUtils.loadTexture('./Textures/sun.jpg');
 var physics = {};
 var geometry = new THREE.SphereGeometry(SunRadius, 32, 16);
 var material = new THREE.MeshLambertMaterial({ color: 0xff3300, specular: 0x555555, map: textureSun, emissive: 0xffffff});
@@ -115,9 +115,9 @@ Sun.physics = physics;
 Sun.physics.mass = SunMass;
 scene.add(Sun);
 
-Jupiter = CreatePlanet('Standard', 'Jupiter', 'jupiter.jpg', 0.069173 * scale, 792.5, 1.3e-5, 1.3053, 1.89813e27);
-Saturn = CreatePlanet('Rings', 'Saturn', 'saturn.jpg', 0.057316 * scale, 1490, 9.64e-6, 2.48446, 5.98319e26);
-Earth = CreatePlanet('Standard', 'Earth', 'earth.jpg', 0.0063674447 * scale, 900, 1.38e-5, 5e-5, 5.9721986e24);
+Jupiter = CreatePlanet('Standard', 'Jupiter', './Textures/jupiter.jpg', 0.069173 * scale, 792.5, 1.3e-5, 1.3053, 1.89813e27);
+Saturn = CreatePlanet('Rings', 'Saturn', './Textures/saturn.jpg', 0.057316 * scale, 1490, 9.64e-6, 2.48446, 5.98319e26);
+Earth = CreatePlanet('Standard', 'Earth', './Textures/earth.jpg', 0.0063674447 * scale, 900, 1.38e-5, 5e-5, 5.9721986e24);
 
 var ambientLight = new THREE.PointLight(0xffffff, 2);
 ambientLight.position.set(0, 0, 0);
