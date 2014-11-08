@@ -12,4 +12,5 @@ To come :
     Statistics of each planet
     Collisions
     LeapMotion support !
+    Comets (melting around the Sun)
     And more ....
