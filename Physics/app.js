@@ -31,6 +31,8 @@ function createRenderer() {
     window.addEventListener('resize', onWindowResize, false );
     return renderer;
 }
+
+
 function getAcceleration(distance, starMass) {
     return G * starMass / (Math.pow(distance, 2));
 }
@@ -45,85 +47,89 @@ function leaveTrail(sphere) {
     sphere.physics.trail.geometry.vertices.length = MAX_TRAIL_VERTICES;
     sphere.physics.trail.geometry.verticesNeedUpdate = true;
 }
-function calculateVelocity(planet, star) {
-    var velocity = new THREE.Vector3();
-    var speed;
-    for(var i = 0; i < STEPS_PER_FRAME; i++) {
-        speed = getAcceleration(getDistance(star.position, planet.position) * METERS_PER_UNIT, star.physics.mass) * SEC_PER_STEP;
-        velocity.subVectors(star.position, planet.position).setLength(speed / METERS_PER_UNIT);
-        planet.physics.vel.add(velocity);
 
-        planet.position.x += planet.physics.vel.x * SEC_PER_STEP;
-        planet.position.y += planet.physics.vel.y * SEC_PER_STEP;
-        planet.position.z += planet.physics.vel.z * SEC_PER_STEP;
 
-        if (i % STEPS_PER_FRAME === 0) {
-            leaveTrail(planet);
+
+function CelestialBody(type, name, texturePath, radius, distance, speed, inclination, mass) {
+    var physics = {};
+    var geometry = new THREE.SphereGeometry(radius, 32, 16);
+    var texturePlanet = THREE.ImageUtils.loadTexture(texturePath);
+
+    if (type == "Star") {
+        var material = new THREE.MeshLambertMaterial({ color: 0xff3300, specular: 0x555555, map: texturePlanet, emissive: 0xffffff});
+        this.Sphere = new THREE.Mesh(geometry, material);
+        this.Sphere.position.set(0, 0, 0);
+    }
+    else {
+        var material = new THREE.MeshLambertMaterial({ map: texturePlanet });
+        this.Sphere = new THREE.Mesh(geometry, material);
+        this.Sphere.position.set(Math.cos(inclination / 180 * Math.PI) * distance,
+            Math.sin(inclination / 180 * Math.PI) * distance, 0);
+    }
+    this.Sphere.physics = physics;
+    this.Sphere.physics.name = name;
+    this.Sphere.physics.type = type;
+    this.Sphere.physics.mass = mass;
+
+    if (type != "Star") {
+        this.Sphere.physics.vel = new THREE.Vector3(0, 0, speed);
+        this.Sphere.physics.trail = createTrail(Math.cos(inclination / 180 * Math.PI) * distance,
+            Math.sin(inclination / 180 * Math.PI) * distance, 0);
+        scene.add(this.Sphere.physics.trail);
+    }
+
+    scene.add(this.Sphere);
+}
+
+CelestialBody.prototype = {
+    constructor: CelestialBody,
+    updateVelocity:function (star) {
+        var velocity = new THREE.Vector3();
+        var speed;
+        for(var i = 0; i < STEPS_PER_FRAME; i++) {
+            speed = getAcceleration(getDistance(star.Sphere.position, this.Sphere.position) * METERS_PER_UNIT, star.Sphere.physics.mass) * SEC_PER_STEP;
+            velocity.subVectors(star.Sphere.position, this.Sphere.position).setLength(speed / METERS_PER_UNIT);
+            this.Sphere.physics.vel.add(velocity);
+
+            this.Sphere.position.x += this.Sphere.physics.vel.x * SEC_PER_STEP;
+            this.Sphere.position.y += this.Sphere.physics.vel.y * SEC_PER_STEP;
+            this.Sphere.position.z += this.Sphere.physics.vel.z * SEC_PER_STEP;
+
+            if (i % STEPS_PER_FRAME === 0) {
+                leaveTrail(this.Sphere);
+            }
         }
     }
 }
-function CreatePlanet(type, name, texturePath, radius, distance, speed, inclination, mass) {
-    var texturePlanet = THREE.ImageUtils.loadTexture(texturePath);
-    var physics = {};
-    var geometry = new THREE.SphereGeometry(radius, 32, 16);
-    var material = new THREE.MeshLambertMaterial({ map: texturePlanet });
-    var Planet = new THREE.Mesh(geometry, material);
-    Planet.position.set(Math.cos(inclination / 180 * Math.PI) * distance,
-        Math.sin(inclination / 180 * Math.PI) * distance, 0);
-    Planet.physics = physics;
-    Planet.physics.name = name;
-    Planet.physics.type = type;
-    Planet.physics.mass = mass;
-
-    Planet.physics.vel = new THREE.Vector3(0, 0, speed);
-    Planet.physics.trail = createTrail(Math.cos(inclination / 180 * Math.PI) * distance,
-        Math.sin(inclination / 180 * Math.PI) * distance, 0);
-    scene.add(Planet.physics.trail);
 
 
-//        var geometry = new THREE.TextGeometry(name, {size: 1, height: 10, font: 'optimer', weight: 'normal' });
-//        var material = new THREE.THREE.MeshBasicMaterial({ color: 0xffff00 });
-//        var text = new THREE.Mesh(geometry, material);
-//        text.position.set(Math.cos(inclination / 180 * Math.PI) * distance,
-//            Math.sin(inclination / 180 * Math.PI) * distance, 0);
-//        scene.add(text);
 
-    scene.add(Planet);
-    return (Planet);
-}
+//function init() {
+    var scene = new THREE.Scene();
+    var camera = createCamera();
+    scene.add(camera);
+    camera.lookAt(scene.position);
 
-var scene = new THREE.Scene();
-var camera = createCamera();
-scene.add(camera);
-camera.lookAt(scene.position);
+    var scale = 200;
 
-controls = new THREE.OrbitControls(camera);
-
-var scale = 200;
 // All units are in GigaMeters !
 
-var SunRadius = 0.6955 * scale;
-var SunMass = 3.988435e30;
+    Sun = new CelestialBody('Star', 'Sun', './Textures/sun.jpg', 0.6955 * scale, 0, 0, 0, 3.988435e30);
+    Jupiter = new CelestialBody('Standard', 'Jupiter', './Textures/jupiter.jpg', 0.069173 * scale, 792.5, 1.3e-5, 1.3053, 1.89813e27);
+    Saturn = new CelestialBody('Rings', 'Saturn', './Textures/saturn.jpg', 0.057316 * scale, 1490, 9.64e-6, 2.48446, 5.98319e26);
+    Earth = new CelestialBody('Standard', 'Earth', './Textures/earth.jpg', 0.0063674447 * scale, 900, 1.38e-5, 5e-5, 5.9721986e24);
 
-var textureSun = THREE.ImageUtils.loadTexture('./Textures/sun.jpg');
-var physics = {};
-var geometry = new THREE.SphereGeometry(SunRadius, 32, 16);
-var material = new THREE.MeshLambertMaterial({ color: 0xff3300, specular: 0x555555, map: textureSun, emissive: 0xffffff});
-var Sun = new THREE.Mesh(geometry, material);
-Sun.position.set(0, 0, 0);
-Sun.physics = physics;
-Sun.physics.mass = SunMass;
-scene.add(Sun);
+    var ambientLight = new THREE.PointLight(0xffffff, 2);
+    ambientLight.position.set(0, 0, 0);
+    scene.add(ambientLight);
 
-Jupiter = CreatePlanet('Standard', 'Jupiter', './Textures/jupiter.jpg', 0.069173 * scale, 792.5, 1.3e-5, 1.3053, 1.89813e27);
-Saturn = CreatePlanet('Rings', 'Saturn', './Textures/saturn.jpg', 0.057316 * scale, 1490, 9.64e-6, 2.48446, 5.98319e26);
-Earth = CreatePlanet('Standard', 'Earth', './Textures/earth.jpg', 0.0063674447 * scale, 900, 1.38e-5, 5e-5, 5.9721986e24);
+    var renderer = createRenderer();
 
-var ambientLight = new THREE.PointLight(0xffffff, 2);
-ambientLight.position.set(0, 0, 0);
-scene.add(ambientLight);
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    animate();
+//}
 
-var renderer = createRenderer();
+
 
 
 function onWindowResize() {
@@ -138,10 +144,11 @@ function animate() {
     controls.update();
 }
 function render() {
-    calculateVelocity(Jupiter, Sun);
-    calculateVelocity(Saturn, Sun);
-    calculateVelocity(Earth, Sun);
-    Sun.rotateY(-0.001);
+    Jupiter.updateVelocity(Sun);
+    Earth.updateVelocity(Sun);
+    Saturn.updateVelocity(Sun);
+    //Sun.rotateY(-0.001);
     renderer.render(scene, camera);
 }
-animate();
+
+init();
