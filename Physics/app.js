@@ -63,32 +63,32 @@ function CelestialBody(type, name, texturePath, radius, distance, speed, inclina
     else {
         var material = new THREE.MeshLambertMaterial({ map: texturePlanet });
         this.Sphere = new THREE.Mesh(geometry, material);
-        this.Sphere.position.set(Math.cos(inclination / 180 * Math.PI) * distance,
-            Math.sin(inclination / 180 * Math.PI) * distance, 0);
     }
+
     this.Sphere.physics = physics;
     this.Sphere.physics.name = name;
     this.Sphere.physics.type = type;
     this.Sphere.physics.mass = mass;
+    this.Sphere.physics.inclination = inclination;
+    this.Sphere.physics.distance = distance;
+    this.Sphere.physics.speed = speed;
+    this.Sphere.physics.radius = radius;
 
     if (type != "Star") {
         this.Sphere.physics.vel = new THREE.Vector3(0, 0, speed);
         this.Sphere.physics.trail = createTrail(Math.cos(inclination / 180 * Math.PI) * distance,
             Math.sin(inclination / 180 * Math.PI) * distance, 0);
-        scene.add(this.Sphere.physics.trail);
     }
-
-    scene.add(this.Sphere);
 }
 
 CelestialBody.prototype = {
     constructor: CelestialBody,
-    updateVelocity:function (star) {
+    updateVelocity:function () {
         var velocity = new THREE.Vector3();
         var speed;
         for(var i = 0; i < STEPS_PER_FRAME; i++) {
-            speed = getAcceleration(getDistance(star.Sphere.position, this.Sphere.position) * METERS_PER_UNIT, star.Sphere.physics.mass) * SEC_PER_STEP;
-            velocity.subVectors(star.Sphere.position, this.Sphere.position).setLength(speed / METERS_PER_UNIT);
+            speed = getAcceleration(getDistance(this.orbiting.Sphere.position, this.Sphere.position) * METERS_PER_UNIT, this.orbiting.Sphere.physics.mass) * SEC_PER_STEP;
+            velocity.subVectors(this.orbiting.Sphere.position, this.Sphere.position).setLength(speed / METERS_PER_UNIT);
             this.Sphere.physics.vel.add(velocity);
 
             this.Sphere.position.x += this.Sphere.physics.vel.x * SEC_PER_STEP;
@@ -99,12 +99,39 @@ CelestialBody.prototype = {
                 leaveTrail(this.Sphere);
             }
         }
+    },
+    setOrbiting:function(Orbiting) {
+        this.orbiting = Orbiting;
+        this.Sphere.position.set(Math.cos(this.Sphere.physics.inclination / 180 * Math.PI) * this.Sphere.physics.distance,
+            Math.sin(this.Sphere.physics.inclination / 180 * Math.PI) * this.Sphere.physics.distance, 0);
+    }
+}
+
+function System() {
+    this.Components = [];
+}
+System.prototype = {
+    constructor: System,
+    addCelestialBody:function(CelestialBody, orbiting, scene) {
+        if (CelestialBody.Sphere.physics.type != "Star") {
+            CelestialBody.setOrbiting(orbiting);
+            scene.add(CelestialBody.Sphere.physics.trail);
+        }
+        scene.add(CelestialBody.Sphere);
+        this.Components.push(CelestialBody);
+    },
+    removeCelestialBody:function(scene, name) {
+
+    },
+    runSystem:function() {
+        for (var i = 0; i < this.Components.length; i++) {
+            if (this.Components[i].Sphere.physics.type != "Star")
+                this.Components[i].updateVelocity();
+        }
     }
 }
 
 
-
-//function init() {
     var scene = new THREE.Scene();
     var camera = createCamera();
     scene.add(camera);
@@ -114,10 +141,16 @@ CelestialBody.prototype = {
 
 // All units are in GigaMeters !
 
+    Fuck = new System();
     Sun = new CelestialBody('Star', 'Sun', './Textures/sun.jpg', 0.6955 * scale, 0, 0, 0, 3.988435e30);
     Jupiter = new CelestialBody('Standard', 'Jupiter', './Textures/jupiter.jpg', 0.069173 * scale, 792.5, 1.3e-5, 1.3053, 1.89813e27);
-    Saturn = new CelestialBody('Rings', 'Saturn', './Textures/saturn.jpg', 0.057316 * scale, 1490, 9.64e-6, 2.48446, 5.98319e26);
     Earth = new CelestialBody('Standard', 'Earth', './Textures/earth.jpg', 0.0063674447 * scale, 900, 1.38e-5, 5e-5, 5.9721986e24);
+
+    Fuck.addCelestialBody(Sun, null, scene);
+    Fuck.addCelestialBody(Jupiter, Sun, scene);
+    Fuck.addCelestialBody(Earth, Sun, scene);
+
+    //Saturn = new CelestialBody('Rings', 'Saturn', './Textures/saturn.jpg', 0.057316 * scale, 1490, 9.64e-6, 2.48446, 5.98319e26);
 
     var ambientLight = new THREE.PointLight(0xffffff, 2);
     ambientLight.position.set(0, 0, 0);
@@ -127,7 +160,6 @@ CelestialBody.prototype = {
 
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     animate();
-//}
 
 
 
@@ -144,11 +176,6 @@ function animate() {
     controls.update();
 }
 function render() {
-    Jupiter.updateVelocity(Sun);
-    Earth.updateVelocity(Sun);
-    Saturn.updateVelocity(Sun);
-    //Sun.rotateY(-0.001);
+    Fuck.runSystem();
     renderer.render(scene, camera);
 }
-
-init();
