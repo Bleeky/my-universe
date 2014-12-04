@@ -7,7 +7,7 @@ var G = 6.67384e-11;
 var SEC_PER_STEP = 4;
 var STEPS_PER_FRAME = 10000;
 var METERS_PER_UNIT = 1000000000;
-var MAX_TRAIL_VERTICES = 500;
+var MAX_TRAIL_VERTICES = 5000;
 
 
 function createCamera() {
@@ -20,7 +20,7 @@ function createTrail(x, y, z) {
     for (var i = 0; i < MAX_TRAIL_VERTICES; i++) {
         trailGeometry.vertices.push(new THREE.Vector3(x, y, z));
     }
-    var trailMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00});
+    var trailMaterial = new THREE.LineBasicMaterial({ color: 0xa0ff0f});
     return new THREE.Line(trailGeometry, trailMaterial);
 }
 function createRenderer() {
@@ -152,29 +152,59 @@ System.prototype = {
         this.controls.target.copy(this.focused.Sphere.position);
     },
     setFocused:function(focused) {
+        if (this.focused != null) {
+            this.focusVec = new THREE.Vector3();
+            this.focusVec.subVectors(focused.Sphere.position, this.focused.Sphere.position);
+            this.camera.position.add(this.focusVec);
+        }
         this.focused = focused;
+        this.camera.lookAt(this.focused.Sphere.position);
     }
 }
 
-    var scale = 200;
+    var scale = 100;
 
 // All units are in GigaMeters !
 
+
+    /*
+    Creating a CelestialBody :
+    CelestialBody = new CelestialBody(Type, Name, TexturePath, Radius, DistanceFromGravitationalCenter, Speed, InclinationFromTheGravitationalCenter, Mass);
+    */
     Fuck = new System();
     Sun = new CelestialBody('Star', 'Sun', './Textures/sun.jpg', 0.6955 * scale, 0, 0, 0, 3.988435e30);
-    Jupiter = new CelestialBody('Standard', 'Jupiter', './Textures/jupiter.jpg', 0.069173 * scale, 792.5, 1.3e-5, 1.3053, 1.89813e27);
-    Earth = new CelestialBody('Standard', 'Earth', './Textures/earth.jpg', 0.0063674447 * scale, 900, 1.38e-5, 5e-5, 5.9721986e24);
+    Jupiter = new CelestialBody('Gas', 'Jupiter', './Textures/jupiter.jpg', 0.069173 * scale, 792.5, 1.3e-5, 1.3053, 1.89813e27);
+    Earth = new CelestialBody('Rock', 'Earth', './Textures/earth.jpg', 0.0063674447 * scale, 900, 1.38e-5, 5e-5, 5.9721986e24);
+    Saturn = new CelestialBody('Gas/Rings', 'Saturn', './Textures/saturn.jpg', 0.057316 * scale, 1490, 9.64e-6, 2.48446, 5.98319e26);
 
+    Unknown = new CelestialBody('Gas/Rings', 'Unknown', './Textures/earth.jpg', 0.17316 * scale, 1290, 10.64e-6, 50.48446, 15.98319e26);
+    //UnknownSatelite = new CelestialBody('Rock', 'Satelite', './Textures/earth.jpg', 0.0043674447 * scale, 1320, 10.64e-6, 50.48446, 0.000000000021986e24);
+
+    /*
+    Adding a CelestialBody to the system :
+    System.AddCelestialBody(BodyToAdd, GravitationalCenterOfTheNewBody);
+    */
     Fuck.addCelestialBody(Sun, null);
     Fuck.addCelestialBody(Jupiter, Sun);
     Fuck.addCelestialBody(Earth, Sun);
+    Fuck.addCelestialBody(Saturn, Sun);
 
-    Fuck.setFocused(Jupiter);
+    Fuck.addCelestialBody(Unknown, Sun);
+    //Fuck.addCelestialBody(UnknownSatelite, Unknown);
+
+    Fuck.setFocused(Sun);
 
     animate();
 
-    //Saturn = new CelestialBody('Rings', 'Saturn', './Textures/saturn.jpg', 0.057316 * scale, 1490, 9.64e-6, 2.48446, 5.98319e26);
+function focusCameraOn(focus) {
+}
 
+document.getElementById("focus").onchange = function(e) {
+    for (var i = 0; i < Fuck.Components.length; i++) {
+        if (Fuck.Components[i].Sphere.physics.name == this.value)
+            Fuck.setFocused(Fuck.Components[i]);
+    }
+}
 
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
