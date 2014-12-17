@@ -13,10 +13,15 @@
         <label for="focus" style="color: white;">Focus camera on:</label>
         <select id="focus">
             <option value="Sun">Sun</option>
-            <option value="Saturn">Saturn</option>
+            <option value="Mercury">Mercury</option>
+            <option value="Venus">Venus</option>
             <option value="Earth">Earth</option>
+            <option value="Mars">Mars</option>
             <option value="Jupiter">Jupiter</option>
-            <option value="Unknown">Unknown</option>
+            <option value="Saturn">Saturn</option>
+            <option value="Uranus">Uranus</option>
+            <option value="Neptune">Neptune</option>
+<!--            <option value="Unknown">Unknown</option>-->
         </select>
     </div>
 </div>

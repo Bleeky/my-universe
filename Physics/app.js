@@ -173,11 +173,16 @@ System.prototype = {
     */
     Fuck = new System();
     Sun = new CelestialBody('Star', 'Sun', './Textures/sun.jpg', 0.6955 * scale, 0, 0, 0, 3.988435e30);
-    Jupiter = new CelestialBody('Gas', 'Jupiter', './Textures/jupiter.jpg', 0.069173 * scale, 792.5, 1.3e-5, 1.3053, 1.89813e27);
+    Mercury = new CelestialBody('Rock', 'Mercury', './Textures/mercury.jpg', 0.0024397 * scale, 68.2, 4.74e-5, 7.00487, 3.30104e23);
+    Venus = new CelestialBody('Rock', 'Venus', './Textures/venus.jpg', 0.0060519 * scale, 108.8, 3.5e-5, 3.39471, 4.86732e24);
     Earth = new CelestialBody('Rock', 'Earth', './Textures/earth.jpg', 0.0063674447 * scale, 900, 1.38e-5, 5e-5, 5.9721986e24);
+    Mars = new CelestialBody('Rock', 'Mars', './Textures/mars.jpg', 0.003386 * scale, 227.94, 0.0000228175, 1.85, 6.41693e23);
+    Jupiter = new CelestialBody('Gas', 'Jupiter', './Textures/jupiter.jpg', 0.069173 * scale, 792.5, 1.3e-5, 1.3053, 1.89813e27);
     Saturn = new CelestialBody('Gas/Rings', 'Saturn', './Textures/saturn.jpg', 0.057316 * scale, 1490, 9.64e-6, 2.48446, 5.98319e26);
+    Uranus = new CelestialBody('Gas/Rings', 'Uranus', './Textures/uranus.jpg', 0.025266 * scale, 2870.99, 6.509e-6, 0.76, 8.68103e25);
+    Neptune = new CelestialBody('Gas', 'Neptune', './Textures/neptune.jpg', 0.024553 * scale, 4504, 5.449e-6, 1.76, 1.0241e26);
 
-    Unknown = new CelestialBody('Gas/Rings', 'Unknown', './Textures/earth.jpg', 0.17316 * scale, 1290, 10.64e-6, 50.48446, 15.98319e26);
+    //Unknown = new CelestialBody('Gas/Rings', 'Unknown', './Textures/earth.jpg', 0.17316 * scale, 1290, 10.64e-6, 50.48446, 15.98319e26);
     //UnknownSatelite = new CelestialBody('Rock', 'Satelite', './Textures/earth.jpg', 0.0043674447 * scale, 1320, 10.64e-6, 50.48446, 0.000000000021986e24);
 
     /*
@@ -185,11 +190,16 @@ System.prototype = {
     System.AddCelestialBody(BodyToAdd, GravitationalCenterOfTheNewBody);
     */
     Fuck.addCelestialBody(Sun, null);
-    Fuck.addCelestialBody(Jupiter, Sun);
+    Fuck.addCelestialBody(Mercury, Sun);
+    Fuck.addCelestialBody(Venus, Sun);
     Fuck.addCelestialBody(Earth, Sun);
+    Fuck.addCelestialBody(Mars, Sun);
+    Fuck.addCelestialBody(Jupiter, Sun);
     Fuck.addCelestialBody(Saturn, Sun);
+    Fuck.addCelestialBody(Uranus, Sun);
+    Fuck.addCelestialBody(Neptune, Sun);
 
-    Fuck.addCelestialBody(Unknown, Sun);
+    //Fuck.addCelestialBody(Unknown, Sun);
     //Fuck.addCelestialBody(UnknownSatelite, Unknown);
 
     Fuck.setFocused(Sun);
