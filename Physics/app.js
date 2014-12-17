@@ -196,8 +196,6 @@ System.prototype = {
 
     animate();
 
-function focusCameraOn(focus) {
-}
 
 document.getElementById("focus").onchange = function(e) {
     for (var i = 0; i < Fuck.Components.length; i++) {
