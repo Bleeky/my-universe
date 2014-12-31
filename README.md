@@ -1,16 +1,24 @@
-MyUniverse
-==========
+### MyUniverse
 
-Solar system simulator in javascript
+Solar system simulator in javascript, using the ThreeJS library. This is coded using a OOP paradigm. This experiment is still in developpement. Hope you enjoy it !
 
-To come :
-=========
-    Adding satellites to planets
-    Changing your point of view
-    Multiple suns
-    Different types of planets
-    Statistics of each planet
-    Collisions
-    LeapMotion support !
-    Comets (melting around the Sun)
-    And more ....
+## Preview
+
+![Alt text](./Textures/preview.png)
+
+## Features included, for the moment.
+
+- Moving around, zooming
+- Changing your point of view
+- Planets trajectories
+
+## Features to come !
+
+- Adding satellites to planets
+- Statistics of each planet
+- Different types of planets (Rock, Gas, Rings ...)
+- Multiple suns
+- Collisions
+- LeapMotion support !
+- Comets
+- And more ....

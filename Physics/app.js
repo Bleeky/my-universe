@@ -5,9 +5,9 @@ var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 3000
 
 var G = 6.67384e-11;
 var SEC_PER_STEP = 4;
-var STEPS_PER_FRAME = 10000;
+var STEPS_PER_FRAME = 5000;
 var METERS_PER_UNIT = 1000000000;
-var MAX_TRAIL_VERTICES = 5000;
+var MAX_TRAIL_VERTICES = 50000;
 
 
 function createCamera() {
@@ -162,7 +162,7 @@ System.prototype = {
     }
 }
 
-    var scale = 100;
+    var scale = 200;
 
 // All units are in GigaMeters !
 
@@ -171,11 +171,11 @@ System.prototype = {
     Creating a CelestialBody :
     CelestialBody = new CelestialBody(Type, Name, TexturePath, Radius, DistanceFromGravitationalCenter, Speed, InclinationFromTheGravitationalCenter, Mass);
     */
-    Fuck = new System();
-    Sun = new CelestialBody('Star', 'Sun', './Textures/sun.jpg', 0.6955 * scale, 0, 0, 0, 3.988435e30);
+    SolarSystem = new System();
+    Sun = new CelestialBody('Star', 'Sun', './Textures/sun.jpg', 0.6955 * scale / 10, 0, 0, 0, 3.988435e30);
     Mercury = new CelestialBody('Rock', 'Mercury', './Textures/mercury.jpg', 0.0024397 * scale, 68.2, 4.74e-5, 7.00487, 3.30104e23);
     Venus = new CelestialBody('Rock', 'Venus', './Textures/venus.jpg', 0.0060519 * scale, 108.8, 3.5e-5, 3.39471, 4.86732e24);
-    Earth = new CelestialBody('Rock', 'Earth', './Textures/earth.jpg', 0.0063674447 * scale, 900, 1.38e-5, 5e-5, 5.9721986e24);
+    Earth = new CelestialBody('Rock', 'Earth', './Textures/earth.jpg', 0.0063674447 * scale, 147.1, 2.963e-5, 5e-5, 5.9721986e24);
     Mars = new CelestialBody('Rock', 'Mars', './Textures/mars.jpg', 0.003386 * scale, 227.94, 0.0000228175, 1.85, 6.41693e23);
     Jupiter = new CelestialBody('Gas', 'Jupiter', './Textures/jupiter.jpg', 0.069173 * scale, 792.5, 1.3e-5, 1.3053, 1.89813e27);
     Saturn = new CelestialBody('Gas/Rings', 'Saturn', './Textures/saturn.jpg', 0.057316 * scale, 1490, 9.64e-6, 2.48446, 5.98319e26);
@@ -189,28 +189,28 @@ System.prototype = {
     Adding a CelestialBody to the system :
     System.AddCelestialBody(BodyToAdd, GravitationalCenterOfTheNewBody);
     */
-    Fuck.addCelestialBody(Sun, null);
-    Fuck.addCelestialBody(Mercury, Sun);
-    Fuck.addCelestialBody(Venus, Sun);
-    Fuck.addCelestialBody(Earth, Sun);
-    Fuck.addCelestialBody(Mars, Sun);
-    Fuck.addCelestialBody(Jupiter, Sun);
-    Fuck.addCelestialBody(Saturn, Sun);
-    Fuck.addCelestialBody(Uranus, Sun);
-    Fuck.addCelestialBody(Neptune, Sun);
+    SolarSystem.addCelestialBody(Sun, null);
+    SolarSystem.addCelestialBody(Mercury, Sun);
+    SolarSystem.addCelestialBody(Venus, Sun);
+    SolarSystem.addCelestialBody(Earth, Sun);
+    SolarSystem.addCelestialBody(Mars, Sun);
+    SolarSystem.addCelestialBody(Jupiter, Sun);
+    SolarSystem.addCelestialBody(Saturn, Sun);
+    SolarSystem.addCelestialBody(Uranus, Sun);
+    SolarSystem.addCelestialBody(Neptune, Sun);
 
-    //Fuck.addCelestialBody(Unknown, Sun);
-    //Fuck.addCelestialBody(UnknownSatelite, Unknown);
+    //SolarSystem.addCelestialBody(Unknown, Sun);
+    //SolarSystem.addCelestialBody(UnknownSatelite, Unknown);
 
-    Fuck.setFocused(Sun);
+    SolarSystem.setFocused(Sun);
 
     animate();
 
 
 document.getElementById("focus").onchange = function(e) {
-    for (var i = 0; i < Fuck.Components.length; i++) {
-        if (Fuck.Components[i].Sphere.physics.name == this.value)
-            Fuck.setFocused(Fuck.Components[i]);
+    for (var i = 0; i < SolarSystem.Components.length; i++) {
+        if (SolarSystem.Components[i].Sphere.physics.name == this.value)
+            SolarSystem.setFocused(SolarSystem.Components[i]);
     }
 }
 
@@ -218,15 +218,15 @@ function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 
-    Fuck.renderer.setSize( window.innerWidth, window.innerHeight );
-    Fuck.updateSystem();
+    SolarSystem.renderer.setSize( window.innerWidth, window.innerHeight );
+    SolarSystem.updateSystem();
 }
 function animate() {
     render();
     requestAnimationFrame(animate);
-    Fuck.controls.update();
+    SolarSystem.controls.update();
 }
 function render() {
-    Fuck.updateSystem();
-    Fuck.renderer.render(Fuck.scene, Fuck.camera);
+    SolarSystem.updateSystem();
+    SolarSystem.renderer.render(SolarSystem.scene, SolarSystem.camera);
 }
