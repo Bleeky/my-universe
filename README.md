@@ -1,4 +1,4 @@
-### MyUniverse
+# MyUniverse
 
 Solar system simulator in javascript, using the ThreeJS library. This is coded using a OOP paradigm. This experiment is still in developpement. Hope you enjoy it !
 
